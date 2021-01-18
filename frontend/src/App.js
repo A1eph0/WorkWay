@@ -6,7 +6,7 @@ function App() {
   return (
     <div className="App">
       <Navbar sticky="top"  />
-      <SignUpSide />
+      <SignInSide />
     </div>
   );
 }
