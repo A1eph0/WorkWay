@@ -1,3 +1,4 @@
+import {useState} from 'react'
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -11,12 +12,13 @@ import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import { Dropdown } from 'react-bootstrap'
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
+      <Link color="inherit" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
         Work-Way
       </Link>{' '}
       {new Date().getFullYear()}
@@ -58,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignUp() {
   const classes = useStyles();
+  const [usertype, setUsertype] = useState("Applicant")
 
   return (
     <Grid container component="main" className="classes,root">
@@ -71,6 +74,16 @@ export default function SignUp() {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
+        <Dropdown>
+                <Dropdown.Toggle variant="success" id="dropdown-basic" size="sm">
+                    {usertype}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                    <Dropdown.Item onClick={()=>{setUsertype('Applicant')}}>Applicant</Dropdown.Item>
+                    <Dropdown.Item onClick={()=>{setUsertype('Recruiter')}}>Recruiter</Dropdown.Item>
+                </Dropdown.Menu>
+        </Dropdown>
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
@@ -123,7 +136,7 @@ export default function SignUp() {
             <Grid item xs={12}>
               <FormControlLabel
                 control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="I want to receive inspiration, marketing promotions and updates via email."
+                label="I agree to all terms and conditions imposed by the website"
               />
             </Grid>
           </Grid>
@@ -131,8 +144,8 @@ export default function SignUp() {
             type="submit"
             fullWidth
             variant="contained"
-            color="primary"
             className={classes.submit}
+            color="primary"
           >
             Sign Up
           </Button>
