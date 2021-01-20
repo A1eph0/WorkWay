@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
     <Grid container className={classes.image} >
       <CssBaseline />
         <Grid item xs={false} sm={1} />
-        <Grid container xs={12} sm={10} md={10} component={Paper} elevation={6} square>
+        <Grid item xs={12} sm={10} md={10} component={Paper} elevation={6} square>
             <div className={classes.paper}>
             <Avatar className={classes.avatar}>
                 <PersonIcon />
@@ -158,7 +158,7 @@ const useStyles = makeStyles((theme) => ({
             className={classes.submit}
             color="primary"
           >
-          <span style={{color: "white"}}> Sign Up </span>
+          <span style={{color: "white"}}> Submit </span>
           </Button>
                     <Box mt={5}>
                         <Copyright />

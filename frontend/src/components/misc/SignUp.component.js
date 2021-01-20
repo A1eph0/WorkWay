@@ -1,10 +1,11 @@
-import {useState} from 'react'
+import {useState, useContext} from 'react';
+import UserContext from "../../context/UserContext";
+import { useHistory } from "react-router-dom"
+import Axios from 'axios';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -60,7 +61,38 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignUp() {
   const classes = useStyles();
-  const [usertype, setUsertype] = useState("Applicant")
+  const [utype, setUType] = useState("Applicant")
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+  const [cpassword, setCPassword] = useState();
+  const history = useHistory();
+
+  const {userData, setUserData } = useContext(UserContext);
+  
+
+  const submit = async (e) => {
+    e.preventDefault();
+    const newUser = {email, password, cpassword, utype};
+    await Axios.post(
+      "http://localhost:5000/user/signup",
+      newUser
+    );
+    const loginRes = await Axios.post(
+      "http://localhost:5000/user/signin",
+      {
+        email,
+        password,
+      }
+    );
+    setUserData({
+      token: loginRes.data.token,
+      user: loginRes.data.user
+    });
+    localStorage.setItem("auth-token", loginRes.data.token);
+    history.push("/");
+  };
+
+ 
 
   return (
     <Grid container component="main" className="classes.root" style={{height:"100vh"}}>
@@ -76,39 +108,16 @@ export default function SignUp() {
         </Typography>
         <Dropdown>
                 <Dropdown.Toggle variant="success" id="dropdown-basic" size="sm">
-                    {usertype}
+                    {utype}
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu>
-                    <Dropdown.Item onClick={()=>{setUsertype('Applicant')}}>Applicant</Dropdown.Item>
-                    <Dropdown.Item onClick={()=>{setUsertype('Recruiter')}}>Recruiter</Dropdown.Item>
+                    <Dropdown.Item onClick={()=>{setUType('Applicant')}}>Applicant</Dropdown.Item>
+                    <Dropdown.Item onClick={()=>{setUType('Recruiter')}}>Recruiter</Dropdown.Item>
                 </Dropdown.Menu>
         </Dropdown>
-        <form className={classes.form} noValidate>
+        <form className={classes.form} onSubmit={submit}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete="fname"
-                name="firstName"
-                variant="outlined"
-                required
-                fullWidth
-                id="firstName"
-                label="First Name"
-                autoFocus
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="lname"
-              />
-            </Grid>
             <Grid item xs={12}>
               <TextField
                 variant="outlined"
@@ -117,7 +126,7 @@ export default function SignUp() {
                 id="email"
                 label="Email Address"
                 name="email"
-                autoComplete="email"
+                onChange={(e) => setEmail(e.target.value)}
               />
               
             </Grid>
@@ -130,13 +139,19 @@ export default function SignUp() {
                 label="Password"
                 type="password"
                 id="password"
-                autoComplete="current-password"
+                onChange={(e) => setPassword(e.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="I agree to all terms and conditions imposed by the website"
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                name="cpassword"
+                label="Confirm Password"
+                type="password"
+                id="cpassword"
+                onChange={(e) => setCPassword(e.target.value)}
               />
             </Grid>
           </Grid>

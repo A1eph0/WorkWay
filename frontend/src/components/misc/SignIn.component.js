@@ -1,3 +1,7 @@
+import {useState, useContext} from 'react';
+import UserContext from "../../context/UserContext";
+import { useHistory } from "react-router-dom"
+import Axios from 'axios';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -54,8 +58,31 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
- function SignIn() {
+function SignIn() {
   const classes = useStyles();
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+  const history = useHistory();
+
+  const {userData, setUserData } = useContext(UserContext);
+
+  const submit = async (e) => {
+    e.preventDefault()
+    const loginRes = await Axios.post(
+      "http://localhost:5000/user/signin",
+      {
+        email,
+        password
+      }
+    );
+    console.log("jflasjflkjalflasdl", loginRes)
+    setUserData({
+      token: loginRes.data.token,
+      user: loginRes.data.user
+    });
+    localStorage.setItem("auth-token", loginRes.data.token);
+    history.push("/")
+  };
 
   return (
     <Grid container component="main" className={classes.root} >
@@ -69,7 +96,7 @@ const useStyles = makeStyles((theme) => ({
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <form className={classes.form} noValidate>
+          <form className={classes.form} onSubmit={submit}>
             <TextField
               variant="outlined"
               margin="normal"
@@ -78,8 +105,7 @@ const useStyles = makeStyles((theme) => ({
               id="email"
               label="Email Address"
               name="email"
-              autoComplete="email"
-              autoFocus
+              onChange={(e) => setEmail(e.target.value)}
             />
             <TextField
               variant="outlined"
@@ -90,7 +116,7 @@ const useStyles = makeStyles((theme) => ({
               label="Password"
               type="password"
               id="password"
-              autoComplete="current-password"
+              onChange={(e) => setPassword(e.target.value)}
             />
             <Button
               type="submit"
