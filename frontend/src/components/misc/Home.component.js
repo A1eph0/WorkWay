@@ -77,10 +77,6 @@ export default function Home() {
                 </Container>
             </Container>
         </Jumbotron>
-        {/* <div className={classes.paper} style={{height:"30%"}}>
-            <h2> Find your dream job with</h2>
-            <h1 style={{color: "#1c89bb", display: "inline"}}>Work-Way</h1>
-        </div> */}
         <div className={classes.paper} style={{height:"10%"}}>
             
         </div>

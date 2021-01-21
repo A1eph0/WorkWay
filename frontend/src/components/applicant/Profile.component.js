@@ -1,3 +1,7 @@
+import {useState, useContext, useEffect} from 'react';
+import UserContext from "../../context/UserContext";
+import { useHistory } from "react-router-dom"
+import Axios from 'axios';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -56,6 +60,29 @@ const useStyles = makeStyles((theme) => ({
 
  export default  function Profile() {
   const classes = useStyles();
+  const [ displayEdu, setDisplayEdu ] = useState([]);
+  const [ displaySkills, setDisplaySkills ] = useState([]);
+  const [applicant, setApplicant] = useState();
+  const history = useHistory();
+  
+  const {userData, setUserData } = useContext(UserContext);
+  
+  
+  // useEffect( () => {
+  //   const callData = (async () => {
+  //     let token = await localStorage.getItem("auth-token")
+  //     const tokenRes = await Axios.post(
+  //         "http://localhost:5000/user/tokenIsValid", null , {headers: {"x-auth-token": token}}
+  //     );
+  //     if (tokenRes.data) {
+  //       const applicantAll = await Axios.get("http://localhost:5000/user/getall", {
+  //         headers: {"x-auth-token": token}
+  //       });
+  //       setDisplayEdu(callData.data.education)
+  //     }
+  //   });
+  //   callData()
+	// }, [])
 
   return (
     <Grid container component="main" className={classes.rooot}> 

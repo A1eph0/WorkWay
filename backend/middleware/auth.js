@@ -8,7 +8,7 @@ const auth = (req, res, next) => {
         const verified = jwt.verify(token, process.env.JWT_SECRET);
         if (!verified) return res.status(401).json({msg:"Verification Failed! Access Denied!"})
 
-        res.user = verified.id;
+        req.user = verified;
         next();
     }catch (err) {
         res.status(500).json('Error :'+ err.message)

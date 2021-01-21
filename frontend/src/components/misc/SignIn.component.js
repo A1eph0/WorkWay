@@ -75,11 +75,11 @@ function SignIn() {
         password
       }
     );
-    console.log("jflasjflkjalflasdl", loginRes)
     setUserData({
       token: loginRes.data.token,
       user: loginRes.data.user
     });
+    console.log(loginRes.data.token)
     localStorage.setItem("auth-token", loginRes.data.token);
     history.push("/")
   };
