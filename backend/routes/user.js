@@ -8,13 +8,14 @@ const mongoose = require('mongoose');
 
 // Fetching user from db
 router.get("/", auth, async (req, res) => {
+    //console.log(req.user)
     const user = await User.findOne({ email: req.user.email })
-    
-        res.json({
-            id: user._id,
-            email: user.email,
-            utype: user.utype
-        });
+    //console.log(user)
+    res.json({
+        id: user._id,
+        email: user.email,
+        utype: user.utype
+    })
 });
 
 
@@ -92,7 +93,7 @@ router.post("/signup", async (req, res) => {
         const verified = jwt.verify(token, process.env.JWT_SECRET);
         if (!verified) return res.json(false)
 
-        const user = await User.findById(verified.id);
+        const user = await User.findOne({email:verified.email});
         return res.json(true)
     }catch (err) {
         res.status(500).json('Error :'+ err.message)
@@ -100,7 +101,9 @@ router.post("/signup", async (req, res) => {
  });
 
 router.get("/getall", auth, async (req, res) => {
-    const user = await User.findOne({_id: req.user})
+    //console.log(req.user)
+    const user = await User.findOne({email: req.user.email})
+    //console.log(user)
     res.json({
         email: user.email,
         utype: user.utype,
@@ -109,7 +112,7 @@ router.get("/getall", auth, async (req, res) => {
         fname: user.fname,
         lname: user.lname,
         education: user.education,
-        skills: user.education,
+        skills: user.skills,
         trating: user.trating,
         nrating: user.nrating,
     
@@ -120,8 +123,12 @@ router.get("/getall", auth, async (req, res) => {
     });
 });
 
-
-
+router.post("/update", auth, async (req, res) => {
+    User
+        .updateOne({email: req.user.email}, req.body)
+        .then(() => res.json("User updated!"))
+        .catch(err => res.status(400).json('Error: ' + err))
+});
 
 
 // Export router

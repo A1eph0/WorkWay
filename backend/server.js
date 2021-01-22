@@ -8,8 +8,7 @@ require('dotenv').config();      // Config file
 
 // Loading routers for models
 const userRouter = require('./routes/user');
-// const recruiterRouter = require('./routes/recruiter');
-// const jobRouter = require('./routes/job');
+const jobRouter = require('./routes/job');
 
 
 // Expressing app and defining port
@@ -46,3 +45,4 @@ connection.once('open', () => {
 
 // Using the loaded models
 app.use('/user', userRouter);
+app.use('/job', jobRouter);

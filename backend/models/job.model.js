@@ -3,12 +3,17 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const applicantSchema = new Schema({
-    id: {
+    email: {
         type: String,
         required: true
     },
     sop:{
         type: String
+    },
+    stage: {
+        type: Number,
+        default: 0,
+        required: true
     }
 });
 
@@ -18,7 +23,7 @@ const jobSchema = new Schema({
         type: String,
         required: true
     },
-    rid: {
+    remail: {
         type: String,
         required: true
     },
@@ -37,7 +42,6 @@ const jobSchema = new Schema({
     },
     dod: {
         type: Date,
-        required: true
     },
     skills : [{
         type: String
@@ -61,11 +65,6 @@ const jobSchema = new Schema({
     nrating : {
         type: Number,
         default: 0
-    },
-    stage: {
-        type: Number,
-        default: 0,
-        required: true
     },
     applicants : [applicantSchema]
 });

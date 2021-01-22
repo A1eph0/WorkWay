@@ -1,3 +1,7 @@
+import {useState, useContext, useEffect} from 'react';
+import UserContext from "../../context/UserContext";
+import { useHistory } from "react-router-dom"
+import Axios from 'axios';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -56,13 +60,54 @@ const useStyles = makeStyles((theme) => ({
 
  export default  function Profile() {
   const classes = useStyles();
+  const [cname, setCname] = useState()
+  const [bio, setBio] = useState()
+  const [phone, setPhone] = useState()
+  const history = useHistory()
+
+  const {userData, setUserData } = useContext(UserContext);
+
+  useEffect( () => {
+    const callData = (async () => {
+      let token = await localStorage.getItem("auth-token")
+      const tokenRes = await Axios.post(
+          "http://localhost:5000/user/tokenIsValid", null , {headers: {"x-auth-token": token}}
+      );
+      if (tokenRes.data) {
+        const recruiterAll = await Axios.get("http://localhost:5000/user/getall", {
+          headers: {"x-auth-token": token}
+        });
+        setCname(recruiterAll.data.cname)
+        setBio(recruiterAll.data.bio)
+        setPhone(recruiterAll.data.phone)
+      }
+    });
+    callData()
+    console.log(userData)
+	}, [])
+
+  const submit = async (e) => {
+    e.preventDefault()
+    const updatedUser = {cname, phone, bio};
+    let token = await localStorage.getItem("auth-token")
+      const tokenRes = await Axios.post(
+          "http://localhost:5000/user/tokenIsValid", null , {headers: {"x-auth-token": token}}
+      );
+      if (tokenRes.data) {
+        console.log(updatedUser)
+        await Axios.post("http://localhost:5000/user/update", updatedUser, {
+          headers: {"x-auth-token": token}
+        }); 
+      }
+    history.push("/")
+  }
 
   return (
-    <Grid container component="main" className={classes.rooot}> 
+    <Grid container component="main" className={classes.rooot} style={{height:"100vh"}}> 
     <Grid container className={classes.image} >
       <CssBaseline />
         <Grid item xs={false} sm={1} />
-        <Grid container xs={12} sm={10} md={10} component={Paper} elevation={6} square>
+        <Grid item xs={12} sm={10} md={10} component={Paper} elevation={6} square style={{height:"100vh"}}>
             <div className={classes.paper}>
             <Avatar className={classes.avatar}>
                 <PersonIcon />
@@ -70,32 +115,22 @@ const useStyles = makeStyles((theme) => ({
             <Typography component="h1" variant="h5">
                 Edit Profile
             </Typography>
-            <form className={classes.form} noValidate>
+            <form className={classes.form} onSubmit={submit}>
             <Grid container spacing={2}>
                 <h3> • Basic Info</h3>
             </Grid>
             <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete="fname"
-                name="firstName"
-                variant="outlined"
-                required
-                fullWidth
-                id="firstName"
-                label="First Name"
-                autoFocus
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 variant="outlined"
                 required
                 fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="lname"
+                id="cName"
+                label="Company Name"
+                defaultValue={cname}
+                value={cname}
+                onChange={(e) => setCname(e.target.value)}
+                InputLabelProps={{ shrink: true }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -106,7 +141,7 @@ const useStyles = makeStyles((theme) => ({
                 fullWidth
                 id="email"
                 label="Email Address"
-                defaultValue="Hello World"
+                value={userData?.user?.email}
                 InputProps={{
                     readOnly: true,
                 }}
@@ -118,8 +153,13 @@ const useStyles = makeStyles((theme) => ({
                 variant="outlined"
                 required
                 fullWidth
-                id="email"
-                label="Email Address"
+                type="number"
+                id="phone"
+                label="Phone"
+                defaultValue={phone}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                InputLabelProps={{ shrink: true }}
               />
             </Grid>
             <br />
@@ -136,6 +176,10 @@ const useStyles = makeStyles((theme) => ({
                 fullWidth
                 id="bio"
                 label="Tell us more (max 250 words)"
+                defaultValue={bio}
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                InputLabelProps={{ shrink: true }}
             />
             </Grid>
 
@@ -147,7 +191,7 @@ const useStyles = makeStyles((theme) => ({
             className={classes.submit}
             color="primary"
           >
-          <span style={{color: "white"}}> Sign Up </span>
+          <span style={{color: "white"}}> Save </span>
           </Button>
                     <Box mt={5}>
                         <Copyright />

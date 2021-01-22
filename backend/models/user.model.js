@@ -10,20 +10,16 @@ var validateEmail = function(email) {
 };
 
 const educationSchema = new Schema({
-    degree: {
-        type : String,
-        required : true
-    },
     institute: {
         type: String,
         required: true
     },
-    startyear: {
+    syear: {
         type: Number,
         required: true,
         trim: true
     },
-    endyear: {
+    eyear: {
         type: Number,
         trim: true
     }
@@ -84,5 +80,5 @@ const userSchema = new Schema({
 
 
 // Exporting the model
-const User = mongoose.model('Applicant', userSchema);
+const User = mongoose.model('User', userSchema);
 module.exports = User;

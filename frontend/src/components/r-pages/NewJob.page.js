@@ -1,4 +1,4 @@
-import Profile from '../recruiter/Profile.component'
+import Profile from '../recruiter/NewJob.component'
 import Navbar from '../recruiter/Navbar.component'
 import { useContext, useEffect } from 'react';
 import UserContext from "../../context/UserContext";
