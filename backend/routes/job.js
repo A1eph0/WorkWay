@@ -5,7 +5,7 @@ const auth = require("../middleware/auth");
 const Job = require("../models/job.model")
 const mongoose = require('mongoose');
 
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
     const jobs = await Job.find()
     res.json(jobs)
 })

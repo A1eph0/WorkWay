@@ -1,4 +1,4 @@
-import {useState, useContext, useEffect} from 'react';
+import {useState, useContext} from 'react';
 import UserContext from "../../context/UserContext";
 import { useHistory } from "react-router-dom"
 import Axios from 'axios';
@@ -66,48 +66,32 @@ const useStyles = makeStyles((theme) => ({
 
  export default  function Profile() {
   const classes = useStyles();
-  const [ education, setEducation ] = useState([]);
   const [ skills, setSkills ] = useState([]);
-  const [fname, setFname] = useState("")
-  const [lname, setLname] = useState("")
+  const [title, setTitle] = useState()
   const [skill, setSkill] = useState("")
-  const [institute, setInstitute] = useState("")
-  const [syear, setSyear] = useState("")
-  const [eyear, setEyear] = useState("")
+  const [salary, setSalary] = useState()
+  const [maxapp, setMaxapp] = useState()
+  const [maxpos, setMaxpos] = useState()
+  const [jtype, setJtype] = useState()
+  const [duration, setDuration] = useState()
+  const [dod, setDod] = useState()
   const history = useHistory();
   
   const {userData, setUserData } = useContext(UserContext);
-  
-  
-  useEffect( () => {
-    const callData = (async () => {
-      let token = await localStorage.getItem("auth-token")
-      const tokenRes = await Axios.post(
-          "http://localhost:5000/user/tokenIsValid", null , {headers: {"x-auth-token": token}}
-      );
-      if (tokenRes.data) {
-        const recruiterAll = await Axios.get("http://localhost:5000/user/getall", {
-          headers: {"x-auth-token": token}
-        });
-        setEducation(recruiterAll.data.education)
-        setSkills(recruiterAll.data.skills)
-        setFname(recruiterAll.data.fname)
-        setLname(recruiterAll.data.lname)
-      }
-    });
-    callData();
-  }, [])
-  
+
+  const jobTypes = ["Full-Time","Part-Time", "Work from Home"]
+  const durTypes = ["0", "1", "2", "3", "4", "5", "6"]
+
   const submit = async (e) => {
     e.preventDefault()
-    const updatedUser = {education, fname, lname, skills};
+    var dop = new Date()
+    const newJob = {title, skills, salary, maxapp, maxpos, jtype, duration, dod, dop};
     let token = await localStorage.getItem("auth-token")
       const tokenRes = await Axios.post(
           "http://localhost:5000/user/tokenIsValid", null , {headers: {"x-auth-token": token}}
       );
       if (tokenRes.data) {
-        console.log(updatedUser)
-        await Axios.post("http://localhost:5000/user/update", updatedUser, {
+        await Axios.post("http://localhost:5000/job/add", newJob, {
           headers: {"x-auth-token": token}
         }); 
       }
@@ -131,126 +115,108 @@ const useStyles = makeStyles((theme) => ({
             <Grid container spacing={2}>
                 <h3> • Basic Info</h3>
             </Grid>
-            <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                name="fName"
-                variant="outlined"
-                required
-                fullWidth
-                id="fName"
-                label="First Name"
-                defaultValue={fname}
-                value={fname}
-                onChange={(e) => setFname(e.target.value)}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="lName"
-                label="Last Name"
-                name="lName"
-                defaultValue={lname}
-                value={lname}
-                onChange={(e) => setLname(e.target.value)}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-            
-            <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                defaultValue={userData?.user?.email || ''}
-                value={userData?.user?.email || ''}
-                InputProps={{
-                    readOnly: true,
-                }}
-              />
-            </Grid>
-            <br />
-            &nbsp;
-            <br/>
-            <Grid container spacing={2}>
-                <h3> • Education</h3>
-            </Grid>
-          &nbsp;
           <Grid container spacing={2}>
-              {education?.map(item => {
-                return (
-                  <Grid item key={JSON.stringify(item)}>
-                    <Card>
-                      <CardContent>
-                        <h5>{item.institute}</h5>
-                        {item.syear}-{item.eyear}
-                        <IconButton onClick={() => {
-                          setEducation(education.filter(ed => (ed !== item) ))
-                        }}>
-                          <DeleteOutlineIcon />
-                        </IconButton>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                )
-              })}
-          </Grid>
             <Grid item xs={12}>
-            
-            <TextField
+              <TextField
+                name="title"
                 variant="outlined"
+                required
                 fullWidth
-                id="institute"
-                label="Institute"
-                onChange={(e) => setInstitute(e.target.value)}
+                id="title"
+                label="Job Title"
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Autocomplete
+              id="jtype"
+              options={jobTypes}
+              getOptionLabel={(option) => option}
+              style={{ width: "100%" }}
+              renderInput={(params) => <TextField {...params} required label="Job Type" variant="outlined" />}
+              onInputChange={(event, value)=>{
+                  setJtype(value)
+              }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+            <TextField
+              fullWidth
+              id="date"
+              variant="outlined"
+              label="Deadline"
+              type="date"
+              className={classes.textField}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              onChange={(e) => setDod(e.target.value)}
             />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete="sYear"
-                name="sYear"
-                variant="outlined"
-                fullWidth
-                id="sYear"
-                label="Start Year"
-                onChange={(e) => setSyear(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                variant="outlined"
-                fullWidth
-                id="eYear"
-                label="End Year"
-                name="eYear"
-                onChange={(e) => setEyear(e.target.value)}
-              />
-            </Grid>
-            <Button
-            fullWidth
-            variant="contained"
-            className={classes.submit}
-            color="primary"
-            onClick={()=>{
-              const item = {institute, syear, eyear}
-              if (!education.filter(ed => ed === item).length && institute !== "" && syear != "")
-                setEducation([...education, item])
-            }}
-          >
-          <span style={{color: "white"}}> Add Education </span>
-          </Button>
+          
           </Grid>
           <br />
           &nbsp;
           <br/>
           <Grid container spacing={2}>
-                <h3> • Skills</h3>
+                <h3> • Other Info</h3>
+          </Grid>
+          &nbsp;
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+                <TextField
+                  name="title"
+                  variant="outlined"
+                  required
+                  type="number"
+                  fullWidth
+                  id="title"
+                  label="Salary"
+                  onChange={(e) => setSalary(e.target.value)}
+                />
+            </Grid>
+            <Grid item xs={12}>
+                <Autocomplete
+                id="jtype"
+                options={durTypes}
+                getOptionLabel={(option) => option}
+                style={{ width: "100%" }}
+                renderInput={(params) => <TextField {...params} required label="Duration" variant="outlined" />}
+                onInputChange={(event, value)=>{
+                  setDuration(value)
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+                <TextField
+                  required
+                  name="maxapp"
+                  variant="outlined"
+                  type="number"
+                  fullWidth
+                  id="maxapp"
+                  label="Max Applicants"
+                  onChange={(e) => setMaxapp(e.target.value)}
+                />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+                <TextField
+                  required
+                  variant="outlined"
+                  type="number"
+                  fullWidth
+                  id="maxpos"
+                  label="Max Positions"
+                  name="maxpos"
+                  onChange={(e) => setMaxpos(e.target.value)}
+                />
+            </Grid>
+          </Grid>
+          <br />
+          &nbsp;
+          <br/>
+          <Grid container spacing={2}>
+                <h3> • Required Skills</h3>
           </Grid>
           &nbsp;
           <Grid container spacing={2}>
@@ -285,7 +251,7 @@ const useStyles = makeStyles((theme) => ({
                 onInputChange={(event, value)=>{
                   setSkill(value)
                 }} 
-                renderInput={(params) => <TextField {...params} variant="outlined" />}
+                renderInput={(params) => <TextField {...params} label="Enter new skill" variant="outlined" />}
               />
             </Grid>
           <Grid item xs={12}>

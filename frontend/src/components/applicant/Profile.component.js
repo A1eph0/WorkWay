@@ -285,7 +285,7 @@ const useStyles = makeStyles((theme) => ({
                 onInputChange={(event, value)=>{
                   setSkill(value)
                 }} 
-                renderInput={(params) => <TextField {...params} variant="outlined" />}
+                renderInput={(params) => <TextField {...params} label="Enter new skill" variant="outlined" />}
               />
             </Grid>
           <Grid item xs={12}>
