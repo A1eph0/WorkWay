@@ -72,12 +72,19 @@ const useStyles = makeStyles((theme) => ({
 
  export default  function Dash() {
   const classes = useStyles();
-
+  
   const [jobs, setJobs] = useState([])
   const [sop, setSop] = useState("")
   const [cjob, setCjob] = useState()
-  const {userData, setUserData } = useContext(UserContext);
   const [open, setOpen] = useState(false);
+  const [users, setUsers] = useState([])
+
+  const {userData, setUserData } = useContext(UserContext);
+  const history = useHistory();
+
+  const buttonOptions = () => {
+
+  }
 
   const sendData = (async () => {
     let token = await localStorage.getItem("auth-token")
@@ -86,13 +93,18 @@ const useStyles = makeStyles((theme) => ({
         "http://localhost:5000/user/tokenIsValid", null, {headers: {"x-auth-token": token}}
     );
     console.log(applicants)
-    if (tokenRes.data) {
-    await Axios.post(`http://localhost:5000/job/update/${cjob._id}`, {applicants}, {
-        headers: {"x-auth-token": token}
-    });
-    console.log(applicants)
+      if (tokenRes.data) {
+      await Axios.post(`http://localhost:5000/job/update/${cjob._id}`, {applicants}, {
+          headers: {"x-auth-token": token}
+      });
+      if (tokenRes.data) {
+        const jobsAll = await Axios.get("http://localhost:5000/job/", {
+          headers: {"x-auth-token": token}
+        });
+        setJobs(jobsAll.data)
+      }
     }
-});
+  });
 
 
 
@@ -106,8 +118,11 @@ const useStyles = makeStyles((theme) => ({
           const jobsAll = await Axios.get("http://localhost:5000/job/", {
             headers: {"x-auth-token": token}
           });
-          console.log(jobsAll)
+          const usersAll = await Axios.get("http://localhost:5000/user/every", {
+            headers: {"x-auth-token": token}
+          });
           setJobs(jobsAll.data)
+          setUsers(usersAll.data)
         }
       });
       callData()
@@ -127,9 +142,8 @@ const useStyles = makeStyles((theme) => ({
                     setCjob(job);
                     setOpen(true);
                 };
-                const handleCloseAndSubmit = () => {
-                    
-                    sendData();
+                const handleCloseAndSubmit = async () => {
+                    await sendData();
                     setOpen(false);
                     setSop("")
                 };
@@ -143,30 +157,62 @@ const useStyles = makeStyles((theme) => ({
                     <h4>{job.title}</h4>
                     <Grid container spacing={1}>
                      <Grid item xs={6}>
-                        Job Type: {job.jtype}
+                        Job Type: {job.title}
                      </Grid>
                      <Grid item xs={6}>
-                        Salary: {job.salary}
+                        Company:&nbsp;
+                        {
+                          users?.filter(user => (user.email === job.remail)).map(  user => {
+                            return (
+                              <>
+                              {user.cname}
+                              </>
+                            )
+                          })
+                        }
+                     </Grid>
+                     <Grid item xs={6}>
+                        Salary:  <bf>$</bf> {job.salary}
+                     </Grid>
+                     <Grid item xs={6}>
+                        Skills : |&nbsp;{job.skills.join(" | " )} |
                      </Grid>
                      <Grid item xs={6}>
                         Deadline: { (new Date(job.dod)).toDateString() }
                      </Grid>
                      <Grid item xs={6}>
-                        Skills : |&nbsp;{job.skills.join(" | " )} |
+                        
                      </Grid>
                     </Grid>
                     </CardContent>
 
                     <CardActions>
-                    <Button
+                    {
+                      (!job.applicants.filter(ap => ap.email === userData.user.email).length) ? 
+                      (
+                        <Button
                         onClick={handleClickOpen}
                         fullWidth
                         variant="contained"
                         className={classes.submit}
                         color="primary"
-                    >
-                        <span style={{color: "white"}}> Apply </span>
-                    </Button>
+                        >
+                          <span style={{color: "white"}}> Apply </span>
+                        </Button>
+
+                      ) : 
+                      (
+                        <Button
+                        fullWidth
+                        variant="contained"
+                        className={classes.submit}
+                        color="secondary"
+                        >
+                          <span style={{color: "white"}}> Applied </span>
+                        </Button>
+                      )
+                    }
+                    
                     <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
                         <DialogTitle id="form-dialog-title">{job.title}</DialogTitle>
                         <DialogContent>
