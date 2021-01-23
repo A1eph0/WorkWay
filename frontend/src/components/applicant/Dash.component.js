@@ -1,8 +1,6 @@
 import {useState, useContext, useEffect} from 'react';
 import UserContext from "../../context/UserContext";
-import { useHistory } from "react-router-dom"
 import Axios from 'axios';
-import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
@@ -13,12 +11,8 @@ import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
-import PersonIcon from '@material-ui/icons/Person';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import IconButton from '@material-ui/core/IconButton';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -80,7 +74,6 @@ const useStyles = makeStyles((theme) => ({
   const [users, setUsers] = useState([])
 
   const {userData, setUserData } = useContext(UserContext);
-  const history = useHistory();
 
   const buttonOptions = () => {
 
@@ -257,6 +250,9 @@ const useStyles = makeStyles((theme) => ({
                 )
               })}
             </Grid>
+            <Box mt={5}>
+              <Copyright />
+            </Box>
         </Grid>
         <Grid item xs={false} sm={1} md={7}/>
     </Grid>
