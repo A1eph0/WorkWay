@@ -7,7 +7,8 @@ import SignIn from './components/misc-pages/SignIn.page'
 import SignUp from './components/misc-pages/SignUp.page'
 import A_Profile from './components/a-pages/Profile.page'
 import R_Profile from './components/r-pages/Profile.page'
-import NewJob from './components/recruiter/NewJob.component'
+import NewJob from './components/r-pages/NewJob.page'
+import A_Dash from './components/a-pages/Dash.page'
 
 export default function App() {
   let [userData, setUserData] = useState({
@@ -50,6 +51,7 @@ export default function App() {
           <Route path="/applicantprofile" component={A_Profile}/>
           <Route path="/recruiterprofile" component={R_Profile}/>
           <Route path="/newjob" component={NewJob}/>
+          <Route path="/applicantdash" component={A_Dash}/>
         </UserContext.Provider>
       </Router>
     </div>

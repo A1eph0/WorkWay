@@ -239,7 +239,7 @@ const useStyles = makeStyles((theme) => ({
             color="primary"
             onClick={()=>{
               const item = {institute, syear, eyear}
-              if (!education.filter(ed => ed === item).length && institute !== "" && syear != "")
+              if (!education.filter(ed => JSON.stringify(ed) === JSON.stringify(item)).length && institute !== "" && syear != "")
                 setEducation([...education, item])
             }}
           >

@@ -22,7 +22,7 @@ router.get("/", auth, async (req, res) => {
 // Adding database entry
 router.post("/signup", async (req, res) => {
     try {
-        const {email, password, cpassword, utype}= req.body;
+        const {email, password, cpassword, utype, cname, fname, lname}= req.body;
 
         if (!email || !password || !cpassword || !utype)
             return res.status(400).json({msg: "Not all fields have been entered."})
@@ -42,7 +42,10 @@ router.post("/signup", async (req, res) => {
         const newUser = new User({
             email,
             password: passwordHash,
-            utype
+            utype,
+            cname,
+            fname,
+            lname
         });
 
         newUser

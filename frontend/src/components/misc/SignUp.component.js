@@ -65,14 +65,17 @@ export default function SignUp() {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [cpassword, setCPassword] = useState();
+  const [fname, setFname] = useState()
+  const [lname, setLname] = useState()
+  const [cname, setCname] = useState()
   const history = useHistory();
 
-  const {userData, setUserData } = useContext(UserContext);
+  const {userData, setUserData} = useContext(UserContext);
   
 
   const submit = async (e) => {
     e.preventDefault();
-    const newUser = {email, password, cpassword, utype};
+    const newUser = {email, password, cpassword, utype, fname, lname, cname};
     await Axios.post(
       "http://localhost:5000/user/signup",
       newUser
@@ -92,7 +95,6 @@ export default function SignUp() {
     history.push("/");
   };
 
- 
 
   return (
     <Grid container component="main" className="classes.root" style={{height:"100vh"}}>
@@ -118,6 +120,43 @@ export default function SignUp() {
         </Dropdown>
         <form className={classes.form} onSubmit={submit}>
           <Grid container spacing={2}>
+            {
+              (utype==="Applicant") ? (
+                <>
+                  <Grid item xs={12} sm={6}>
+                      <TextField
+                        variant="outlined"
+                        required
+                        fullWidth
+                        label="First Name"
+                        onChange={(e) => setFname(e.target.value)}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        variant="outlined"
+                        required
+                        fullWidth
+                        label="Last Name"
+                        onChange={(e) => setLname(e.target.value)}
+                      />
+                    </Grid>
+                </>
+              ): (
+                <>
+                <Grid item xs={12}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="cName"
+                    label="Company Name"
+                    onChange={(e) => setCname(e.target.value)}
+                  />
+                </Grid>
+              </>
+              )
+            }
             <Grid item xs={12}>
               <TextField
                 variant="outlined"

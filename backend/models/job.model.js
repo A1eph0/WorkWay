@@ -16,7 +16,9 @@ const applicantSchema = new Schema({
         required: true
     },
     doa: {
-        type: String
+        type: Date,
+        default: Date.now,
+        required: true
     }
 });
 
