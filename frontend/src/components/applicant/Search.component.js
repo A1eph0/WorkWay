@@ -218,15 +218,29 @@ const useStyles = makeStyles((theme) => ({
                     {
                       (!job.applicants.filter(ap => ap.email === userData.user.email).length) ? 
                       (
-                        <Button
-                        onClick={handleClickOpen}
-                        fullWidth
-                        variant="contained"
-                        className={classes.submit}
-                        color="primary"
-                        >
-                          <span style={{color: "white"}}> Apply </span>
-                        </Button>
+                        (job.applicants.filter(ap => ap.stage != -1 && ap.stage<2).length >= job.maxapp) ? 
+                        (
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                className={classes.submit}
+                                color=""
+                                >
+                                <span style={{color: "red"}}> Full </span>
+                            </Button>
+                        ) :
+                        (
+                            <Button
+                            onClick={handleClickOpen}
+                            fullWidth
+                            variant="contained"
+                            className={classes.submit}
+                            color="primary"
+                            >
+                            <span style={{color: "white"}}> Apply </span>
+                            </Button>
+                        )
+                        
 
                       ) : 
                       (
