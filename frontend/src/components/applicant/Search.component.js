@@ -18,7 +18,12 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Rating from '@material-ui/lab/Rating';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 
 function Copyright() {
@@ -73,6 +78,19 @@ const useStyles = makeStyles((theme) => ({
   const [cjob, setCjob] = useState({"skills": []})
   const [open, setOpen] = useState(false);
   const [users, setUsers] = useState([])
+  const [open2, setOpen2] = useState(false);
+
+  const handleClick2 = () => {
+    setOpen2(true);
+  };
+
+  const handleClose2 = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen2(false);
+  };
 
   const {userData} = useContext(UserContext);
 
@@ -97,7 +115,8 @@ const useStyles = makeStyles((theme) => ({
     }
   });
 
-
+  const filled = jobs?.filter(job => job?.applicants?.filter( ap => ap.email === userData?.user?.email && ap.stage !== -1).length).length
+  console.log("Filled:", filled)
 
   useEffect( () => {
       const callData = (async () => {
@@ -130,8 +149,13 @@ const useStyles = makeStyles((theme) => ({
             <Grid container spacing={4}>
               {jobs?.map(job => {
                 const handleClickOpen = () => {
+                    if (filled >= 10){
+                        setOpen2(true);
+                    }
+                    else{
                     setCjob(job);
                     setOpen(true);
+                    }
                 };
                 const handleCloseAndSubmit = async () => {
                     await sendData();
@@ -216,6 +240,11 @@ const useStyles = makeStyles((theme) => ({
                         </Button>
                       )
                     }
+                    <Snackbar open={open2} autoHideDuration={6000} onClose={handleClose2}>
+                                <Alert onClose={handleClose2} severity="error">
+                                    Application limit exceeded!
+                                </Alert>
+                    </Snackbar>
                     
                     <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
                         <DialogTitle id="form-dialog-title">{cjob.title}</DialogTitle>
