@@ -19,6 +19,10 @@ const applicantSchema = new Schema({
         type: Date,
         default: Date.now,
         required: true
+    },
+    rated:{
+        type: Boolean,
+        default: false
     }
 });
 

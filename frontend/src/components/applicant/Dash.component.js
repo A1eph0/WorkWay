@@ -68,26 +68,30 @@ const useStyles = makeStyles((theme) => ({
   const classes = useStyles();
   
   const [jobs, setJobs] = useState([])
-  const [sop, setSop] = useState("")
+  const [rating, setRating] = useState(3)
   const [cjob, setCjob] = useState()
   const [open, setOpen] = useState(false);
   const [users, setUsers] = useState([])
 
   const {userData, setUserData } = useContext(UserContext);
 
-  const buttonOptions = () => {
-
-  }
-
   const sendData = (async () => {
     let token = await localStorage.getItem("auth-token")
-    const applicants = [...cjob.applicants, { sop, email: userData.user.email }]
+    let tempApplicant = cjob.applicants.filter(ap => ap.email === userData.user.email)
+    tempApplicant = tempApplicant[0]
+    tempApplicant.stage+=1
+    console.log(tempApplicant)
+    let applicants = cjob.applicants.filter(ap => ap.email !== userData.user.email)
+    applicants = [...applicants, tempApplicant]
+    let nrating=cjob.nrating+1
+    let trating=cjob.trating+rating
+    console.log(applicants)
     const tokenRes = await Axios.post(
         "http://localhost:5000/user/tokenIsValid", null, {headers: {"x-auth-token": token}}
     );
-    console.log(applicants)
+    console.log("applicants")
       if (tokenRes.data) {
-      await Axios.post(`http://localhost:5000/job/update/${cjob._id}`, {applicants}, {
+      await Axios.post(`http://localhost:5000/job/update/${cjob._id}`, {applicants, nrating, trating}, {
           headers: {"x-auth-token": token}
       });
       if (tokenRes.data) {
@@ -119,18 +123,25 @@ const useStyles = makeStyles((theme) => ({
         }
       });
       callData()
+      
       console.log(userData)
   }, [])
-
+  const jobUser = () => jobs?.filter(job => job?.applicants?.filter( ap => ap.email === userData.user.email && ap.stage !== -1).length)
+  let newJobs = jobUser()
+  console.log("dfsahfasf", newJobs)
   return (
     <Grid container component="main" className={classes.rooot} style={{height:"100vh"}}> 
     <Grid container className={classes.image} >
       <CssBaseline />
         <Grid item xs={false} sm={1} />
-        <Grid item xs={12} sm={10} md={10} component={Paper} elevation={6} square style={{height: "100vh"}}>
-        <div className={classes.paper}></div>
+        <Grid item xs={12} sm={10} md={10} component={Paper} elevation={6} square style={{height: "100%"}}>
+        <div className={classes.paper}>
+          <h1>My Applications</h1>
+        </div>
             <Grid container spacing={4}>
-              {jobs?.map(job => {
+              {newJobs?.map(job => {
+                let appVals = job.applicants.filter(ap => ap.email === userData.user.email)
+                appVals=appVals[0]
                 const handleClickOpen = () => {
                     setCjob(job);
                     setOpen(true);
@@ -138,7 +149,6 @@ const useStyles = makeStyles((theme) => ({
                 const handleCloseAndSubmit = async () => {
                     await sendData();
                     setOpen(false);
-                    setSop("")
                 };
                 const handleClose = () => {
                     setOpen(false);
@@ -150,7 +160,7 @@ const useStyles = makeStyles((theme) => ({
                     <h4>{job.title}</h4>
                     <Grid container spacing={1}>
                      <Grid item xs={6}>
-                        Job Type: {job.title}
+                        Job Type: {job.jtype}
                      </Grid>
                      <Grid item xs={6}>
                         Company:&nbsp;
@@ -165,73 +175,68 @@ const useStyles = makeStyles((theme) => ({
                         }
                      </Grid>
                      <Grid item xs={6}>
-                        Salary:  <bf>$</bf> {job.salary}
+                        Salary:  {job.salary}
                      </Grid>
                      <Grid item xs={6}>
                         Skills : |&nbsp;{job.skills.join(" | " )} |
                      </Grid>
-                     <Grid item xs={6}>
-                        Deadline: { (new Date(job.dod)).toDateString() }
-                     </Grid>
-                     <Grid item xs={6}>
-                        
+                     &nbsp;
+                     <br/>
+                     <Grid item xs={12} style={{alignItems: "center"}}>
+                      <h6>Status:&nbsp;
+                      {
+                        (appVals.stage < 2) ? (
+                          <a style={{
+                            color: "white",
+                            backgroundColor: '#f1356d',
+                            borderRadius: '8px'
+                          }}> 
+                          &nbsp; Pending &nbsp;
+                          </a>
+                        ) : (
+                          <a style={{
+                            color: "white",
+                            backgroundColor: '#18de46',
+                            borderRadius: '8px'
+                          }}> 
+                          &nbsp; Accepted &nbsp;
+                          </a> 
+                        )
+                      }
+                      </h6>
                      </Grid>
                     </Grid>
                     </CardContent>
 
                     <CardActions>
                     {
-                      (!job.applicants.filter(ap => ap.email === userData.user.email).length) ? 
+                      (appVals.stage===2) ? 
                       (
                         <Button
-                        onClick={handleClickOpen}
+                        onClick={() => handleClickOpen()}
                         fullWidth
                         variant="contained"
                         className={classes.submit}
                         color="primary"
                         >
-                          <span style={{color: "white"}}> Apply </span>
+                          <span style={{color: "white"}}> Rate Job</span>
                         </Button>
-
-                      ) : 
-                      (
-                        <Button
-                        fullWidth
-                        variant="contained"
-                        className={classes.submit}
-                        color="secondary"
-                        >
-                          <span style={{color: "white"}}> Applied </span>
-                        </Button>
-                      )
+                      ) : (<></>)
                     }
-                    
                     <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
                         <DialogTitle id="form-dialog-title">{job.title}</DialogTitle>
                         <DialogContent>
                         <DialogContentText>
-                        <Grid container spacing={1}>
-                            <Grid item xs={6}>
-                                Job Type: {job.jtype}
-                            </Grid>
-                            <Grid item xs={6}>
-                                Salary: {job.salary}
-                            </Grid>
-                            <Grid item xs={6}>
-                                Deadline: { (new Date(job.dod)).toDateString() }
-                            </Grid>
-                            <Grid item xs={6}>
-                                Skills : |&nbsp;{job.skills.join(" | " )} |
-                            </Grid>
-                        </Grid>
+                          <h6>Rate your job!</h6>
                         </DialogContentText>
                         <TextField
                             autoFocus
                             margin="dense"
-                            id="name"
-                            label="Statement of Purpose"
+                            type="number"
+                            label="Rating (Out of 5 ★)"
                             fullWidth
-                            onChange={(e) => setSop(e.target.value)}
+                            value={rating}
+                            onChange={(e) => setRating(e.target.value)}
                         />
                         </DialogContent>
                         <DialogActions>
@@ -243,6 +248,7 @@ const useStyles = makeStyles((theme) => ({
                         </Button>
                         </DialogActions>
                     </Dialog>
+                    
                 </CardActions>
 
                   </Card>

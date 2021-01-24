@@ -8,6 +8,7 @@ import SignUp from './components/misc-pages/SignUp.page'
 import A_Profile from './components/a-pages/Profile.page'
 import R_Profile from './components/r-pages/Profile.page'
 import NewJob from './components/r-pages/NewJob.page'
+import Search from './components/a-pages/Search.page'
 import A_Dash from './components/a-pages/Dash.page'
 
 export default function App() {
@@ -52,6 +53,7 @@ export default function App() {
           <Route path="/recruiterprofile" component={R_Profile}/>
           <Route path="/newjob" component={NewJob}/>
           <Route path="/applicantdash" component={A_Dash}/>
+          <Route path="/search" component={Search}/>
         </UserContext.Provider>
       </Router>
     </div>
