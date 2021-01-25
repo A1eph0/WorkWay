@@ -80,9 +80,7 @@ const useStyles = makeStyles((theme) => ({
   const [users, setUsers] = useState([])
   const [open2, setOpen2] = useState(false);
 
-  const handleClick2 = () => {
-    setOpen2(true);
-  };
+
 
   const handleClose2 = (event, reason) => {
     if (reason === 'clickaway') {
@@ -115,8 +113,10 @@ const useStyles = makeStyles((theme) => ({
     }
   });
 
-  const filled = jobs?.filter(job => job?.applicants?.filter( ap => ap.email === userData?.user?.email && ap.stage !== -1).length).length
+  const filled = jobs?.filter(job => job?.applicants?.filter( ap => ap.email === userData?.user?.email && ap?.stage !== -1).length).length
   console.log("Filled:", filled)
+  const employed = jobs?.filter(job => job?.applicants?.filter( ap => ap.email === userData?.user?.email && ap?.stage >= 2).length).length
+  console.log("employed", employed)
 
   useEffect( () => {
       const callData = (async () => {
@@ -149,7 +149,7 @@ const useStyles = makeStyles((theme) => ({
             <Grid container spacing={4}>
               {jobs?.map(job => {
                 const handleClickOpen = () => {
-                    if (filled >= 10){
+                    if (filled >= 10 || employed){
                         setOpen2(true);
                     }
                     else{
@@ -218,7 +218,7 @@ const useStyles = makeStyles((theme) => ({
                     {
                       (!job.applicants.filter(ap => ap.email === userData.user.email).length) ? 
                       (
-                        (job.applicants.filter(ap => ap.stage != -1 && ap.stage<2).length >= job.maxapp) ? 
+                        (job.applicants.filter(ap => ap.stage != -1).length >= job.maxapp) ? 
                         (
                             <Button
                                 fullWidth
@@ -255,9 +255,21 @@ const useStyles = makeStyles((theme) => ({
                       )
                     }
                     <Snackbar open={open2} autoHideDuration={6000} onClose={handleClose2}>
-                                <Alert onClose={handleClose2} severity="error">
+                    {
+                      (employed) ? 
+                      (
+                        <Alert onClose={handleClose2} severity="error">
+                                    Already Employed in Job!
+                        </Alert>
+
+                      ) 
+                      : 
+                      (
+                        <Alert onClose={handleClose2} severity="error">
                                     Application limit exceeded!
-                                </Alert>
+                        </Alert>
+                      )
+                    }
                     </Snackbar>
                     
                     <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">

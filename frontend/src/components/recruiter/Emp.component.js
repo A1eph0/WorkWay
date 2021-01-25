@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
             headers: {"x-auth-token": token}
           });
           console.log(jobsAll)
-          setJobs(jobsAll)
+          setJobs(jobsAll.data)
         }
       });
       callData()

@@ -21,6 +21,7 @@ const Navbar = () => {
             <h1>Work-Way</h1>
             <div className="links">
                 <a href="/recruiterdash">Dashboard</a>
+                <a href="/myemp">My Employees</a>
                 <a href="/newjob">Create Job</a>
                 <a href="/recruiterprofile" style={{
                     borderWidth: "thin",

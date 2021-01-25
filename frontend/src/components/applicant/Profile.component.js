@@ -184,12 +184,14 @@ const useStyles = makeStyles((theme) => ({
           &nbsp;
           <Grid container spacing={2}>
               {education?.map(item => {
+                let eyear="Present"
+                if (item.eyear!="") eyear=item.eyear
                 return (
                   <Grid item key={JSON.stringify(item)}>
                     <Card>
                       <CardContent>
                         <h5>{item.institute}</h5>
-                        {item.syear}-{item.eyear}
+                        {item.syear}-{eyear}
                         <IconButton onClick={() => {
                           setEducation(education.filter(ed => (ed !== item) ))
                         }}>

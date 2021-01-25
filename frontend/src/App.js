@@ -10,6 +10,8 @@ import R_Profile from './components/r-pages/Profile.page'
 import NewJob from './components/r-pages/NewJob.page'
 import Search from './components/a-pages/Search.page'
 import A_Dash from './components/a-pages/Dash.page'
+import R_Dash from './components/r-pages/Dash.page'
+import Emp from './components/r-pages/Emp.page'
 
 export default function App() {
   let [userData, setUserData] = useState({
@@ -53,7 +55,9 @@ export default function App() {
           <Route path="/recruiterprofile" component={R_Profile}/>
           <Route path="/newjob" component={NewJob}/>
           <Route path="/applicantdash" component={A_Dash}/>
+          <Route path="/recruiterdash" component={R_Dash}/>
           <Route path="/search" component={Search}/>
+          <Route path="/myemp" component={Emp}/>
         </UserContext.Provider>
       </Router>
     </div>
