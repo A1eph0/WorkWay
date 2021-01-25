@@ -20,6 +20,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+import { Dropdown } from 'react-bootstrap'
+
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -75,8 +77,9 @@ export default function Dash() {
   const [jobs, setJobs] = useState([])
   const [cjob, setCjob] = useState({ "skills": [], "applicants": [] })
   const [users, setUsers] = useState()
+  const [soType, setSoType] = useState('Ascending')
+  const [sType, setSType] = useState('Applicant Name')
   const { userData, setUserData } = useContext(UserContext);
-  const [apemail, setApemail] = useState("")
 
   const [open, setOpen] = useState(false)
   const [open2, setOpen2] = useState(false)
@@ -174,6 +177,7 @@ export default function Dash() {
     let tempApplicant = cjob.applicants.filter(ap => ap.email === email)
     tempApplicant = tempApplicant[0]
     tempApplicant.stage+=1
+    tempApplicant.doa = new Date()
     console.log(tempApplicant)
     let applicants = cjob.applicants.filter(ap => ap.email !== email)
     applicants = [...applicants, tempApplicant]
@@ -236,6 +240,41 @@ export default function Dash() {
           </div>
           <Grid container spacing={4}>
             {jobs?.filter(job => job?.remail === userData?.user?.email).map(job => {
+              const sortFunc =  (a, b) => {
+                const rc = (j) => {
+                  if (j.nrating===0)
+                    return 0;
+                  else
+                    return (j.trating/j.nrating) 
+                }
+                const aname = a.fname + a.lname
+                const bname = b.fname + b.lname
+
+                if (sType === 'Applicant Name'){
+                  if (soType==='Ascending'){
+                    return (aname < bname)
+                  }else{
+                    return (bname < aname)
+                  }
+                }else if (sType ==='Duration'){
+                  if (soType==='Ascending'){
+                    return (a.duration - b.duration)
+                  }else{
+                    return (b.duration - a.duration)
+                  }
+                }else{
+                  if (soType==='Ascending'){
+                    return (rc(a)-rc(b))
+                  }else{
+                    return (rc(b)-rc(a))
+                  }
+                }
+              }
+
+              let foo = job?.applicants?.filter(ap => ap.stage != -1 && ap.stage < 2)
+              foo.sort(sortFunc)
+              console.log("foo", foo)
+              
               const handleClickOpen = () => {
                 setCjob(job);
                 setOpen(true);
@@ -329,7 +368,14 @@ export default function Dash() {
                               <a style={{ color: "white" }}>Job Title:</a> <h1 style={{ color: "white" }}> {cjob?.title}</h1>
                             </div>
                             <Grid container spacing={2}>
-                              {cjob?.applicants?.filter(ap => ap.stage != -1 && ap.stage < 2).map(ap => {
+                            <Grid item xs={12}>
+                            <Card>
+                              <CardActions />
+                            </Card>
+                            </Grid>
+                              {
+                                cjob?.applicants?.filter(ap => ap.stage != -1 && ap.stage < 2).map(ap => {
+                                
                                 let applicant = users.filter(user => user.email === ap.email)
                                 const forShortlist = () => {
                                   shortlist(applicant.email)
@@ -367,6 +413,9 @@ export default function Dash() {
                                             Email : {applicant.email}
                                           </Grid>
                                           <Grid item xs={12}>
+                                          Date of application : {(new Date(ap.doa)).toDateString()}
+                                          </Grid>
+                                          <Grid item xs={12}>
                                             Eduacation : <br /> &nbsp;
                                           <Grid container spacing={2}>
                                               {applicant.education.map(ed => {
@@ -392,6 +441,10 @@ export default function Dash() {
                                               }
                                             </Grid>
                                           </Grid>
+                                          <Grid item xs={12}>
+                                          Statement of purpose : {ap.sop}
+                                          </Grid>
+                                          
                                         </Grid>
                                       </CardContent>
                                       <CardActions>
@@ -447,6 +500,42 @@ export default function Dash() {
                           </DialogContentText>
                         </DialogContent>
                         <DialogActions style={{ backgroundColor: "#5a1563" }}>
+                        <Grid container xs={10}>
+                          <Grid item xs={3}>
+                          <h4 style={{ color: "white", display: "inline"}}>Sort by:</h4>
+                          <Dropdown>
+                                      <Dropdown.Toggle variant="warning" id="dropdown-basic" size="sm">
+                                          <h3 style={{ color: "black", display: "inline"}}>{sType}</h3>
+                                      </Dropdown.Toggle>
+
+                                      <Dropdown.Menu>
+                                          <Dropdown.Item onClick={()=>{setSType('Applicant Name')}}>&nbsp; Applicant Name &nbsp;</Dropdown.Item>
+                                          <Dropdown.Item onClick={()=>{setSType('Date of Application')}}>&nbsp; Date of Application &nbsp;</Dropdown.Item>
+                                          <Dropdown.Item onClick={()=>{setSType('Applicant Rating')}}>&nbsp; Applicant Rating &nbsp;</Dropdown.Item>
+                                      </Dropdown.Menu>
+                              </Dropdown>
+                              
+                          </Grid>
+                          <Grid item xs={3}>
+                          <h4 style={{ color: "white", display: "inline"}}>Sort order:</h4>
+                          <Dropdown>
+                                      <Dropdown.Toggle variant="success" id="dropdown-basic" size="sm">
+                                          <h3 style={{ color: "white", display: "inline"}}>{soType}</h3>
+                                      </Dropdown.Toggle>
+
+                                      <Dropdown.Menu>
+                                          <Dropdown.Item onClick={()=>{setSoType('Ascending')}}>&nbsp; Ascending &nbsp;</Dropdown.Item>
+                                          <Dropdown.Item onClick={()=>{setSoType('Descending')}}>&nbsp; Descending &nbsp;</Dropdown.Item>
+                                      </Dropdown.Menu>
+                              </Dropdown>
+                              
+                          </Grid>
+                          <Grid item xs={3} />
+                          <Grid item xs={3}>
+
+                          </Grid>
+                        </Grid>
+                                
                           <Button onClick={handleClose} color="secondary">
                             <span style={{ color: "red" }}> <h3 style={{
                               color: "white",
