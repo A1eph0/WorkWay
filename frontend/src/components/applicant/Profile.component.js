@@ -18,6 +18,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import IconButton from '@material-ui/core/IconButton';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 
 
 function Copyright() {
@@ -75,6 +83,16 @@ const useStyles = makeStyles((theme) => ({
   const [syear, setSyear] = useState("")
   const [eyear, setEyear] = useState("")
   const history = useHistory();
+  const [rating, setRating] = useState()
+  const [open, setOpen] = useState(false)
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+  
   
   const {userData, setUserData } = useContext(UserContext);
   
@@ -93,6 +111,12 @@ const useStyles = makeStyles((theme) => ({
         setSkills(recruiterAll.data.skills)
         setFname(recruiterAll.data.fname)
         setLname(recruiterAll.data.lname)
+        if (Number(recruiterAll.data.nrating)){
+          setRating(recruiterAll.data.trating/recruiterAll.data.nrating)
+        }
+        else{
+          setRating(0)
+        }
       }
     });
     callData();
@@ -176,6 +200,13 @@ const useStyles = makeStyles((theme) => ({
               />
             </Grid>
             <br />
+          &nbsp;
+          <br/>
+          <Grid container spacing={2}>
+                <h3> • Rating: &nbsp; &nbsp; &nbsp;{rating} ★</h3>
+          </Grid>
+          &nbsp;
+            <br />
             &nbsp;
             <br/>
             <Grid container spacing={2}>
@@ -241,7 +272,11 @@ const useStyles = makeStyles((theme) => ({
             color="primary"
             onClick={()=>{
               const item = {institute, syear, eyear}
-              if (!education.filter(ed => JSON.stringify(ed) === JSON.stringify(item)).length && institute !== "" && syear != "")
+              if (syear<0 || (eyear!= "" && syear>eyear))
+              {
+                setOpen(true)
+              }
+              else if (!education.filter(ed => JSON.stringify(ed) === JSON.stringify(item)).length && institute !== "" && syear != "")
                 setEducation([...education, item])
             }}
           >
@@ -323,6 +358,11 @@ const useStyles = makeStyles((theme) => ({
             </Grid>
             <Grid item xs={false} sm={1} md={7}/>
     </Grid>
+    <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error">
+          Please Check Values Entered!
+        </Alert>
+      </Snackbar>
     </Grid> 
   );
 }

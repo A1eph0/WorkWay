@@ -18,10 +18,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
 import { Dropdown } from 'react-bootstrap'
 import Fuse from 'fuse.js';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
 
 
 function Alert(props) {
@@ -89,7 +90,14 @@ const useStyles = makeStyles((theme) => ({
   const [salmax, setSalmax] = useState('')
   const [salmin, setSalmin] = useState('')
   const [jtype, setJtype] = useState('None')
+  const [open3, setOpen3] = useState(false)
+  const handleClose3 = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
 
+    setOpen3(false);
+  };
   const sortFunc =  (a, b) => {
     const rc = (j) => {
       if (j.nrating===0)
@@ -132,6 +140,7 @@ const useStyles = makeStyles((theme) => ({
   if (salmin != ''){
     foo = foo.filter(jb => jb.salary >= salmin)
   }
+  foo=foo.filter(jb => new Date(jb.dod).getTime() > new Date().getTime())
 
   const handleClose2 = (event, reason) => {
     if (reason === 'clickaway') {
@@ -144,6 +153,10 @@ const useStyles = makeStyles((theme) => ({
   const {userData} = useContext(UserContext);
 
   const sendData = (async () => {
+    if(sop.split(" ").length >250){
+        setOpen3(true)
+    }
+    else{
     let token = await localStorage.getItem("auth-token")
     const applicants = [...cjob.applicants, { sop, email: userData.user.email }]
     const tokenRes = await Axios.post(
@@ -162,7 +175,7 @@ const useStyles = makeStyles((theme) => ({
         
       }
     }
-  });
+  }});
 
   const filled = jobs?.filter(job => job?.applicants?.filter( ap => ap.email === userData?.user?.email && ap?.stage !== -1).length).length
   console.log("Filled:", filled)
@@ -412,7 +425,7 @@ const useStyles = makeStyles((theme) => ({
                         Maximum Positions: {job.maxpos}
                     </Grid>
                      <Grid item xs={6}>
-                        Deadline: { (new Date(job.dod)).toDateString() }
+                        Deadline: { (new Date(job.dod)).toLocaleString() }
                      </Grid>
                      <Grid item xs={6}>
                         
@@ -517,6 +530,7 @@ const useStyles = makeStyles((theme) => ({
                         </DialogContentText>
                         <TextField
                             autoFocus
+                            multiline
                             margin="dense"
                             id="name"
                             label="Statement of Purpose"
@@ -546,6 +560,11 @@ const useStyles = makeStyles((theme) => ({
         </Grid>
         <Grid item xs={false} sm={1} md={7}/>
     </Grid>
+    <Snackbar open={open3} autoHideDuration={6000} onClose={handleClose3}>
+        <Alert onClose={handleClose3} severity="error">
+          Please Check Values Entered!
+        </Alert>
+    </Snackbar>
     </Grid> 
   );
 }

@@ -18,6 +18,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import IconButton from '@material-ui/core/IconButton';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 
 function Copyright() {
@@ -76,6 +83,16 @@ const useStyles = makeStyles((theme) => ({
   const [duration, setDuration] = useState()
   const [dod, setDod] = useState()
   const history = useHistory();
+  const [open, setOpen] = useState(false)
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+  
+  
   
   const {userData, setUserData } = useContext(UserContext);
 
@@ -84,6 +101,11 @@ const useStyles = makeStyles((theme) => ({
 
   const submit = async (e) => {
     e.preventDefault()
+    console.log("dod", dod, "New", new Date().toDateString())
+    if(Number(salary) < 0 || Number(maxpos) <= 0 || Number(maxapp) <= 0 || Number(maxapp) < Number(maxpos) || dod < new Date().toISOString()){
+      setOpen(true)
+    }
+    else{
     var dop = new Date()
     const newJob = {title, skills, salary, maxapp, maxpos, jtype, duration, dod, dop};
     let token = await localStorage.getItem("auth-token")
@@ -96,7 +118,7 @@ const useStyles = makeStyles((theme) => ({
         }); 
       }
     history.push("/")
-  }
+  }}
 
   return (
     <Grid container component="main" className={classes.rooot} style={{height:"100vh"}}> 
@@ -141,11 +163,12 @@ const useStyles = makeStyles((theme) => ({
             </Grid>
             <Grid item xs={12}>
             <TextField
+              required
               fullWidth
               id="date"
               variant="outlined"
               label="Deadline"
-              type="date"
+              type="datetime-local"
               className={classes.textField}
               InputLabelProps={{
                 shrink: true,
@@ -287,6 +310,11 @@ const useStyles = makeStyles((theme) => ({
             </Grid>
             <Grid item xs={false} sm={1} md={7}/>
     </Grid>
+    <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error">
+          Please Check Values Entered!
+        </Alert>
+      </Snackbar>
     </Grid> 
   );
 }

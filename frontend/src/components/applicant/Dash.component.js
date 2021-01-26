@@ -18,6 +18,13 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 
 function Copyright() {
@@ -74,8 +81,19 @@ const useStyles = makeStyles((theme) => ({
   const [users, setUsers] = useState([])
 
   const {userData, setUserData } = useContext(UserContext);
+  const [open2, setOpen2] = useState(false)
+  const handleClose2 = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpen2(false);
+  };
 
   const sendData = (async () => {
+    if(Number(rating)<0 || Number(rating)>5){
+      setOpen2(true)
+    }
+    else{
     let token = await localStorage.getItem("auth-token")
     let tempApplicant = cjob.applicants.filter(ap => ap.email === userData.user.email)
     tempApplicant = tempApplicant[0]
@@ -84,7 +102,7 @@ const useStyles = makeStyles((theme) => ({
     let applicants = cjob.applicants.filter(ap => ap.email !== userData.user.email)
     applicants = [...applicants, tempApplicant]
     let nrating=cjob.nrating+1
-    let trating=cjob.trating+rating
+    let trating=Number(cjob.trating)+Number(rating)
     console.log(applicants)
     const tokenRes = await Axios.post(
         "http://localhost:5000/user/tokenIsValid", null, {headers: {"x-auth-token": token}}
@@ -101,7 +119,7 @@ const useStyles = makeStyles((theme) => ({
         setJobs(jobsAll.data)
       }
     }
-  });
+  }});
 
 
 
@@ -262,6 +280,11 @@ const useStyles = makeStyles((theme) => ({
         </Grid>
         <Grid item xs={false} sm={1} md={7}/>
     </Grid>
+    <Snackbar open={open2} autoHideDuration={6000} onClose={handleClose2}>
+        <Alert onClose={handleClose2} severity="error">
+          Please Check Values Entered!
+        </Alert>
+    </Snackbar>
     </Grid> 
   );
 }

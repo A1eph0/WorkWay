@@ -121,7 +121,7 @@ export default function Dash() {
     tempApplicant = tempApplicant[0]
     tempApplicant.stage = -1
     console.log(tempApplicant)
-    let applicants = cjob.applicants.filter(ap => ap.email !== email)
+    let applicants = cjob?.applicants.filter(ap => ap.email !== email)
     applicants = [...applicants, tempApplicant]
     console.log(applicants)
     const tokenRes = await Axios.post(
@@ -130,7 +130,7 @@ export default function Dash() {
     let temp = cjob
     temp.applicants=applicants
     if (tokenRes.data) {
-      await Axios.post(`http://localhost:5000/job/update/${cjob._id}`, { applicants }, {
+      await Axios.post(`http://localhost:5000/job/update/${cjob?._id}`, { applicants }, {
         headers: { "x-auth-token": token }
       });
       if (tokenRes.data) {
@@ -150,7 +150,7 @@ export default function Dash() {
     tempApplicant = tempApplicant[0]
     tempApplicant.stage += 1
     console.log(tempApplicant)
-    let applicants = cjob.applicants.filter(ap => ap.email !== email)
+    let applicants = cjob?.applicants.filter(ap => ap.email !== email)
     applicants = [...applicants, tempApplicant]
     console.log(applicants)
     const tokenRes = await Axios.post(
@@ -174,11 +174,17 @@ export default function Dash() {
 
   const select = async (email) => {
     let token = await localStorage.getItem("auth-token")
-    let tempApplicant = cjob.applicants.filter(ap => ap.email === email)
+    let tempApplicant = cjob?.applicants.filter(ap => ap.email === email)
     tempApplicant = tempApplicant[0]
+    let tempUs = users.filter(u=>u.email===tempApplicant.email)
+    tempUs=tempUs[0]
+    let fname = tempUs.fname
+    let lname = tempUs.lname 
     tempApplicant.stage+=1
     tempApplicant.doa = new Date()
     console.log(tempApplicant)
+    let cname = users.filter(u => u.email === userData.user.email)
+    cname=cname[0].cname
     let applicants = cjob.applicants.filter(ap => ap.email !== email)
     applicants = [...applicants, tempApplicant]
     const tokenRes = await Axios.post(
@@ -204,6 +210,10 @@ export default function Dash() {
         setJobs(jobsAll.data)
         setCjob(jobs.filter(job => job._id ===cjob._id))
         setCjob(cjob[0])
+        if (tokenRes.data) {
+          Axios.post("http://localhost:5000/email/send", {email: tempApplicant.email, fname, lname, job: cjob.title, cname},{
+            headers: {"x-auth-token": token}
+          });}
       }
     }
   }
@@ -240,7 +250,7 @@ export default function Dash() {
           </div>
           <Grid container spacing={4}>
             {jobs?.filter(job => job?.remail === userData?.user?.email).map(job => {
-              const sortFunc =  (a, b) => {
+              {/* const sortFunc =  (a, b) => {
                 const rc = (j) => {
                   if (j.nrating===0)
                     return 0;
@@ -269,11 +279,7 @@ export default function Dash() {
                     return (rc(b)-rc(a))
                   }
                 }
-              }
-
-              let foo = job?.applicants?.filter(ap => ap.stage != -1 && ap.stage < 2)
-              foo.sort(sortFunc)
-              console.log("foo", foo)
+              } */}
               
               const handleClickOpen = () => {
                 setCjob(job);
@@ -335,7 +341,7 @@ export default function Dash() {
                           Skills : |&nbsp;{job.skills.join(" | ")} |
                      </Grid>
                         <Grid item xs={6}>
-                          Deadline: {(new Date(job.dod)).toDateString()}
+                          Deadline: {(new Date(job.dod)).toLocaleString()}
                         </Grid>
                         <Grid item xs={6}>
 
@@ -384,7 +390,7 @@ export default function Dash() {
                                   reject(applicant.email)
                                 }
                                 const forSelect = () => {
-                                  if (cjob.applicants.filter(apl => apl.stage >=2).length >= cjob.maxpos){
+                                  if (cjob?.applicants.filter(apl => apl.stage >=2).length >= cjob?.maxpos){
                                     setOpen3(true)
                                   }
                                   else{
@@ -547,7 +553,7 @@ export default function Dash() {
                         </DialogActions>
                       </Dialog>
                       <Dialog open={open2} onClose={handleClose2} aria-labelledby="form-dialog-title">
-                        <DialogTitle id="form-dialog-title">{cjob.title}</DialogTitle>
+                        <DialogTitle id="form-dialog-title">{cjob?.title}</DialogTitle>
                         <DialogContent>
                         <DialogContentText>
                         
@@ -585,7 +591,7 @@ export default function Dash() {
                             id="date"
                             variant="outlined"
                             label="Deadline"
-                            type="date"
+                            type="datetime-local"
                             className={classes.textField}
                             defaultValue={job.dod.slice(0,10)}
                             InputLabelProps={{

@@ -14,6 +14,14 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { Dropdown } from 'react-bootstrap'
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 
 function Copyright() {
   return (
@@ -68,13 +76,23 @@ export default function SignUp() {
   const [fname, setFname] = useState()
   const [lname, setLname] = useState()
   const [cname, setCname] = useState()
+  
   const history = useHistory();
 
   const {userData, setUserData} = useContext(UserContext);
+  const [open, setOpen] = useState(false)
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
   
 
   const submit = async (e) => {
     e.preventDefault();
+    try{
     const newUser = {email, password, cpassword, utype, fname, lname, cname};
     await Axios.post(
       "http://localhost:5000/user/signup",
@@ -93,6 +111,10 @@ export default function SignUp() {
     });
     localStorage.setItem("auth-token", loginRes.data.token);
     history.push("/");
+    }
+    catch (err){
+      setOpen(true)
+    }
   };
 
 
@@ -216,6 +238,11 @@ export default function SignUp() {
         </form>
       </div>
       </Grid>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error">
+          Please check entered fields!
+        </Alert>
+      </Snackbar>
     </Grid>
   );
 }

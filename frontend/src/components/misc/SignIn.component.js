@@ -13,6 +13,13 @@ import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 function Copyright() {
   return (
@@ -65,9 +72,19 @@ function SignIn() {
   const history = useHistory();
 
   const {userData, setUserData } = useContext(UserContext);
+  const [open, setOpen] = useState(false)
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+  
 
   const submit = async (e) => {
     e.preventDefault()
+    try{
     const loginRes = await Axios.post(
       "http://localhost:5000/user/signin",
       {
@@ -82,6 +99,10 @@ function SignIn() {
     console.log(loginRes.data.token)
     localStorage.setItem("auth-token", loginRes.data.token);
     history.push("/")
+    }
+    catch(err){
+      setOpen(true)
+    }
   };
 
   return (
@@ -140,6 +161,11 @@ function SignIn() {
           </form>
         </div>
       </Grid>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error">
+          Invalid Login Credentials!
+        </Alert>
+      </Snackbar>
     </Grid>
   );
 }

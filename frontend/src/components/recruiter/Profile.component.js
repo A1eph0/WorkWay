@@ -13,6 +13,13 @@ import Grid from '@material-ui/core/Grid';
 import PersonIcon from '@material-ui/icons/Person';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 function Copyright() {
   return (
@@ -64,6 +71,13 @@ const useStyles = makeStyles((theme) => ({
   const [bio, setBio] = useState()
   const [phone, setPhone] = useState()
   const history = useHistory()
+  const [open, setOpen] = useState(false)
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpen(false);
+  };
 
   const {userData, setUserData } = useContext(UserContext);
 
@@ -88,6 +102,10 @@ const useStyles = makeStyles((theme) => ({
 
   const submit = async (e) => {
     e.preventDefault()
+    if(bio.split(" ").length >250 || phone<0){
+      setOpen(true)
+    }
+    else{
     const updatedUser = {cname, phone, bio};
     let token = await localStorage.getItem("auth-token")
       const tokenRes = await Axios.post(
@@ -100,7 +118,7 @@ const useStyles = makeStyles((theme) => ({
         }); 
       }
     history.push("/")
-  }
+  }}
 
   return (
     <Grid container component="main" className={classes.rooot} style={{height:"100vh"}}> 
@@ -173,6 +191,7 @@ const useStyles = makeStyles((theme) => ({
             <TextField
                 variant="outlined"
                 required
+                multiline
                 fullWidth
                 id="bio"
                 label="Tell us more (max 250 words)"
@@ -201,6 +220,11 @@ const useStyles = makeStyles((theme) => ({
             </Grid>
             <Grid item xs={false} sm={1} md={7}/>
     </Grid>
+    <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error">
+          Please Check Values Entered!
+        </Alert>
+    </Snackbar>
     </Grid> 
   );
 }

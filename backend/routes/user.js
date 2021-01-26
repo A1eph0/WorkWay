@@ -133,6 +133,13 @@ router.post("/update", auth, async (req, res) => {
         .catch(err => res.status(400).json('Error: ' + err))
 });
 
+router.post("/updater/:email", auth, async (req, res) => {
+    User
+        .updateOne({email: req.params.email}, req.body)
+        .then(() => res.json("User updated!"))
+        .catch(err => res.status(400).json('Error: ' + err))
+});
+
 router.get("/every", auth, async (req, res) => {
     const users = await User.find()
     res.json(users)
