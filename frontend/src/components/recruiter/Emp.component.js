@@ -246,7 +246,7 @@ const useStyles = makeStyles((theme) => ({
                               <Dropdown.Item onClick={()=>{setSType('Name'); }}>&nbsp; Name &nbsp;</Dropdown.Item>
                               <Dropdown.Item onClick={()=>{setSType('Job Title');}}>&nbsp; Job Title &nbsp;</Dropdown.Item>
                               <Dropdown.Item onClick={()=>{setSType('Date of Joining');}}>&nbsp; Date of Joining &nbsp;</Dropdown.Item>
-                              <Dropdown.Item onClick={()=>{setSType('Applicant Rating');}}>&nbsp; Employee Rating &nbsp;</Dropdown.Item>
+                              <Dropdown.Item onClick={()=>{setSType('Employee Rating');}}>&nbsp; Employee Rating &nbsp;</Dropdown.Item>
                           </Dropdown.Menu>
                 </Dropdown>
               </Grid>
@@ -329,7 +329,7 @@ const useStyles = makeStyles((theme) => ({
                         className={classes.submit}
                         color="primary"
                         >
-                          <span style={{color: "white"}}> Rate Job</span>
+                          <span style={{color: "white"}}> Rate Employee</span>
                         </Button>
                       ) : (<></>)
                     }
