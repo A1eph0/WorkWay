@@ -1,4 +1,5 @@
 # Welcome to WorkWay Portal
+<img src='https://cdn.discordapp.com/attachments/880398206817685514/889866121874931732/unknown.png'>
 
 # About
 WorkWay is a fully functional Job Portal built using MERN-Stack (`Mongoose`, `Express API`, `React` and `NodeJS`). It also uses `Axios`, `becryptjs`, `JWT` etc, along with a self-implemented middleware.
